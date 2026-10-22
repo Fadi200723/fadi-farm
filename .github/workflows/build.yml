@@ -1,4 +1,4 @@
-name: Build Fadi Farm APK
+name: Build Fadi APK
 on:
   push:
     branches: [main, master]
@@ -26,4 +26,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete app --yes --cleanup-tag || true
-          gh release create app FadiFarm.apk --title "Fadi Farm" --notes "آخر نسخة من تطبيق Fadi Farm" --latest
+          gh release create app FadiFarm.apk --title "Fadi 5.2" --notes "آخر نسخة من تطبيق Fadi (Fadi Farm + مجرى)" --latest
