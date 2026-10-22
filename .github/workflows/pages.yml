@@ -1,8 +1,10 @@
-name: Publish Fadi web app (iPhone + PC)
+name: Publish Fadi web app (iPhone + PC) + hourly trends
 on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '23 * * * *'   # تحديث الترندات كل ساعة
 permissions:
   contents: read
   pages: write
@@ -20,6 +22,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Unpack app
         run: if [ -f fadi-farm-studio.zip ]; then unzip -o -q fadi-farm-studio.zip; fi
+      - name: Mirror trends feeds (iPhone + PC)
+        run: python3 tools/mirror_trends.py web || true
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
