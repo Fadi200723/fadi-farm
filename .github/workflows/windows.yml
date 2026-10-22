@@ -1,0 +1,36 @@
+name: Build Fadi for Windows
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: windows
+  cancel-in-progress: true
+jobs:
+  win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Unpack app
+        shell: pwsh
+        run: if (Test-Path fadi-farm-studio.zip) { Expand-Archive -Force fadi-farm-studio.zip . }
+      - name: Build installer
+        shell: bash
+        run: |
+          cd desktop
+          rm -rf web && cp -r ../web ./web
+          npm install --no-audit --no-fund
+          npx electron-builder --win nsis --publish never
+          ls dist
+      - name: Publish download link
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete windows --yes --cleanup-tag || true
+          gh release create windows "desktop/dist/Fadi-Setup.exe" --title "Fadi للحاسوب (Windows)" --notes "نزّل Fadi-Setup.exe وشغّله لتثبيت التطبيق على الحاسوب." --latest=false
